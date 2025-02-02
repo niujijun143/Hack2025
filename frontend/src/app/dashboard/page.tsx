@@ -52,7 +52,11 @@ export default async function Page() {
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-
+                                <DropdownMenuItem>
+                                    <Link href="/">
+                                        <p>Home</p>
+                                    </Link>
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
