@@ -88,8 +88,8 @@ def get_user_trips(user_id):
     
     return user_trips if user_trips else "No trips found for this user."
 
-# def delete_record():
-#     record_db.delete_one(records.insert_one)
+def delete_record(user_id, trip_name, trip_start, trip_end, currency, exchange):
+      record_db.delete_one(user_id, trip_name, trip_start, trip_end, currency, exchange)
 
 # Example Usage
 id_ex = create_trip_event(2, "Japan", "2024-01-02", "2024-01-10", "yan", 7.14)
