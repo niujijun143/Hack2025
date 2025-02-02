@@ -35,9 +35,9 @@ def create_trip_event(user_id, trip_name, trip_start, trip_end, currency, exchan
             'exchange': exchange,
             'expenses': []  # Empty at first, expenses will be added
         })
-        except:
+    except:
             return 404
-        else:
+    else:
             return new_expense_id, 200
 @app.route('/createExp')
 def create_tripExp(user_id, id_ex, amt_h, amt_f, cat, notes):
@@ -72,10 +72,10 @@ def create_tripExp(user_id, id_ex, amt_h, amt_f, cat, notes):
             {'id_ex': id_ex},
             {'$push': {'expenses': trip_data}}
         )
-        except:
+    except:
             return 404
-
-        return new_expense_id, 200
+    else:
+            return new_expense_id, 200
 @app.route('/getTrips')
 def get_user_trips(user_id):
     try:
