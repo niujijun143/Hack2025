@@ -1,85 +1,102 @@
 from pymongo import MongoClient
 from datetime import datetime
+from main import app
 
 client = MongoClient('mongodb+srv://db123:db123@violethacks.o5ozy.mongodb.net/')
 # Define databases
 expenses_db = client['expenses_db']
 record_db = client['record_db']
 
+
 # id_ex = 0
 # new_expense_id = 0
-
+@app.route('/addEvent', methods=['POST'])
 def create_trip_event(user_id, trip_name, trip_start, trip_end, currency, exchange):
     """
     Creates a new budgeting event and stores it in the records database.
     Returns the generated id_ex.
     """
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    try:
+        current_date = datetime.now().strftime("%Y-%m-%d")
 
-    # Access the records collection
-    records = record_db['records']
+        # Access the records collection
+        records = record_db['records']
 
-    # Get the latest id_ex and increment
-    latest_event = records.find_one(sort=[('id_ex', -1)])
-    new_expense_id = (latest_event.get('id_ex', 0) + 1) if latest_event else 1
+        # Get the latest id_ex and increment
+        latest_event = records.find_one(sort=[('id_ex', -1)])
+        new_expense_id = (latest_event.get('id_ex', 0) + 1) if latest_event else 1
 
     # Insert new budget event
-    records.insert_one({
-        'id_ex': new_expense_id,
-        'user_id': [user_id],
-        'trip_name': trip_name,
-        'trip_start': trip_start,
-        'trip_end': trip_end,
-        'currency': currency,  # Fixed typo 'currecy' -> 'currency'
-        'exchange': exchange,
-        'expenses': []  # Empty at first, expenses will be added
-    })
+        records.insert_one({
+            'id_ex': new_expense_id,
+            'user_id': [user_id],
+            'trip_name': trip_name,
+            'trip_start': trip_start,
+            'trip_end': trip_end,
+            'currency': currency,  # Fixed typo 'currecy' -> 'currency'
+            'exchange': exchange,
+            'expenses': []  # Empty at first, expenses will be added
+        })
+    except:
+        return 404
+    else:
+        return new_expense_id, 200
 
-    return new_expense_id
 
+
+@app.route('/addExpense', methods=['POST'])
 def create_tripExp(user_id, id_ex, amt_h, amt_f, cat, notes):
-    """
-    Adds an expense to the expenses database and links it to a budgeting event.
-    """
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    try:
+        """
+        Adds an expense to the expenses database and links it to a budgeting event.
+        """
+        current_date = datetime.now().strftime("%Y-%m-%d")
 
-    # Access the expenses collection
-    expenses = expenses_db['expenses']
+        # Access the expenses collection
+        expenses = expenses_db['expenses']
 
-    # Get the latest expense_id and increment
-    latest_expense = expenses.find_one(sort=[('expense_id', -1)])
-    new_expense_id = (latest_expense.get('expense_id', 0) + 1) if latest_expense else 1
+        # Get the latest expense_id and increment
+        latest_expense = expenses.find_one(sort=[('expense_id', -1)])
+        new_expense_id = (latest_expense.get('expense_id', 0) + 1) if latest_expense else 1
 
-    # Insert expense into expenses collection
-    trip_data = {
-        'expense_id': new_expense_id,
-        'id_ex': id_ex,  # Links to the budgeting event
-        'user_id': [user_id],
-        'amount': amt_h,
-        'amount_f': amt_f,
-        'category': cat,
-        'notes': notes,
-        'date': current_date
-    }
-    expenses.insert_one(trip_data)
+        # Insert expense into expenses collection
+        trip_data = {
+            'expense_id': new_expense_id,
+            'id_ex': id_ex,  # Links to the budgeting event
+            'user_id': [user_id],
+            'amount': amt_h,
+            'amount_f': amt_f,
+            'category': cat,
+            'notes': notes,
+            'date': current_date
+        }
+        expenses.insert_one(trip_data)
 
-    # Also update the records database to include the new expense in the budget event
-    record_db['records'].update_one(
-        {'id_ex': id_ex},
-        {'$push': {'expenses': trip_data}}
-    )
+        # Also update the records database to include the new expense in the budget event
+        record_db['records'].update_one(
+            {'id_ex': id_ex},
+            {'$push': {'expenses': trip_data}}
+        )
+    except:
+        return 404
+    else:
+        return new_expense_id, 200
 
-    return new_expense_id
 
+@app.route('/getTrips', methods=['GET'])
 def get_user_trips(user_id):
-    """
-    Retrieves all trip records associated with a given user_id.
-    """
-    records = record_db['records']
-    
-    user_trips = list(records.find({'user_id': user_id}, {'_id': 0}))  # Exclude MongoDB's _id field
-    
-    return user_trips if user_trips else "No trips found for this user."
+    try:
+        """
+        Retrieves all trip records associated with a given user_id.
+        """
+        records = record_db['records']
+
+        user_trips = list(records.find({'user_id': user_id}, {'_id': 0}))  # Exclude MongoDB's _id field
+    except:
+        return 404
+    else:
+     return user_trips if user_trips else "No trips found for this user.", 200 
+
 
 # Example Usage
 id_ex = create_trip_event(2, "Japan", "2024-01-02", "2024-01-10", "yan", 7.14)
