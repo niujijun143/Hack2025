@@ -1,14 +1,14 @@
-import { authClient } from "@/lib/auth-client"
+// import { authClient } from "@/lib/auth-client"
 
-export function User() {
+// export function User() {
 
-    const {
-        data: session,
-        isPending, //loading state
-        error //error object
-    } = authClient.useSession()
+//     const {
+//         data: session,
+//         isPending, //loading state
+//         error //error object
+//     } = authClient.useSession()
 
-    return (
-        // ...
-    )
-}
+//     return (
+        
+//     )
+// }

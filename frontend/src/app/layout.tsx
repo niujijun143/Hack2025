@@ -27,8 +27,8 @@ export default async function RootLayout({
 
     return (
         <html lang="en" className="bg-blue-500">
-            <body className={`${beVietnamPro.className} antialiased border-t-8 border-blue-500 h-screen w-screen`}>
-                <p className="absolute">{JSON.stringify(session)}</p>
+            <body className={`${beVietnamPro.className} antialiased border-t-8 border-blue-500 w-screen min-h-screen`}>
+                {/* <p className="">{JSON.stringify(session)}</p> */}
                 {children}
                 <Toaster />
             </body>
